@@ -27,9 +27,13 @@ fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + fruit_c
 fruityvice_response_normalized = pandas.json_normalize(fruityvice_response.json())
 streamlit.dataframe(fruityvice_response_normalized)
 
+fruit_ch = streamlit.text_input('Pick some fruit?')
 my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
 my_cur = my_cnx.cursor()
-my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
+if isnull(fruit_ch):
+  my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST")
+else:
+  my_cur.execute("SELECT * FROM FRUIT_LOAD_LIST WHERE FRUIT_NAME = FRUIT_CH")
 my_data_rows = my_cur.fetchall()
 streamlit.text("The Fruit Load List contains:")
 streamlit.dataframe(my_data_rows)
